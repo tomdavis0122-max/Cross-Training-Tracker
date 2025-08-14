@@ -1,0 +1,1792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cross-Training Program Manager</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            color: #2d3748;
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: #718096;
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+        }
+
+        .nav-tab {
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-tab:hover {
+            background: rgba(255, 255, 255, 1);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        .nav-tab.active {
+            background: linear-gradient(135deg, #4299e1, #3182ce);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .content-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            color: #2d3748;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #4299e1, #3182ce);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(66, 153, 225, 0.3);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #e53e3e, #c53030);
+        }
+
+        .btn-danger:hover {
+            box-shadow: 0 6px 16px rgba(229, 62, 62, 0.3);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #718096, #4a5568);
+        }
+
+        .btn-secondary:hover {
+            box-shadow: 0 6px 16px rgba(113, 128, 150, 0.3);
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 0.875rem;
+        }
+
+        .form-grid {
+            display: grid;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #4a5568;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #4299e1;
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th, td {
+            padding: 16px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        th {
+            background: linear-gradient(135deg, #f7fafc, #edf2f7);
+            font-weight: 600;
+            color: #2d3748;
+            position: sticky;
+            top: 0;
+        }
+
+        tr:hover {
+            background-color: #f7fafc;
+        }
+
+        .search-filter {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .search-input {
+            flex: 1;
+            min-width: 200px;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .filter-select {
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            background: white;
+            font-size: 1rem;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            color: #2d3748;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #718096;
+            padding: 8px;
+            border-radius: 4px;
+        }
+
+        .close-btn:hover {
+            background: #f7fafc;
+            color: #2d3748;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 24px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            opacity: 0.9;
+        }
+
+        .calendar-container {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .calendar-nav {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 4px;
+            color: #4299e1;
+        }
+
+        .calendar-nav:hover {
+            background: #f7fafc;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            background: #e2e8f0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .calendar-day {
+            background: white;
+            min-height: 80px;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .calendar-day-number {
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .calendar-event {
+            background: #4299e1;
+            color: white;
+            padding: 2px 4px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            margin-bottom: 2px;
+            cursor: pointer;
+        }
+
+        .calendar-event.completed {
+            background: #48bb78;
+        }
+
+        .calendar-event.cancelled {
+            background: #e53e3e;
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .status-scheduled {
+            background: #bee3f8;
+            color: #2b6cb0;
+        }
+
+        .status-completed {
+            background: #c6f6d5;
+            color: #2f855a;
+        }
+
+        .status-cancelled {
+            background: #fed7d7;
+            color: #c53030;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #718096;
+        }
+
+        .empty-state h3 {
+            margin-bottom: 12px;
+            color: #4a5568;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 12px;
+            }
+
+            .header, .content-section {
+                padding: 16px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .search-filter {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-input {
+                min-width: auto;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .calendar-day {
+                min-height: 60px;
+            }
+
+            .nav-tabs {
+                justify-content: start;
+            }
+
+            th, td {
+                padding: 8px;
+                font-size: 0.875rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Cross-Training Program Manager</h1>
+            <p>Organize and track departmental cross-training sessions, participants, and reflections</p>
+        </div>
+
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showSection('dashboard')">Dashboard</button>
+            <button class="nav-tab" onclick="showSection('departments')">Departments</button>
+            <button class="nav-tab" onclick="showSection('participants')">Participants</button>
+            <button class="nav-tab" onclick="showSection('sessions')">Training Sessions</button>
+            <button class="nav-tab" onclick="showSection('calendar')">Calendar</button>
+            <button class="nav-tab" onclick="showSection('reports')">Reports</button>
+        </div>
+
+        <!-- Dashboard Section -->
+        <div id="dashboard" class="content-section active">
+            <div class="section-header">
+                <h2 class="section-title">Dashboard</h2>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalSessions">0</div>
+                    <div class="stat-label">Total Sessions</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="completedSessions">0</div>
+                    <div class="stat-label">Completed Sessions</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalDepartments">0</div>
+                    <div class="stat-label">Departments</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalParticipants">0</div>
+                    <div class="stat-label">Participants</div>
+                </div>
+            </div>
+
+            <div class="section-header">
+                <h3 class="section-title">Recent Activity</h3>
+            </div>
+            <div id="recentActivity">
+                <div class="empty-state">
+                    <h3>No recent activity</h3>
+                    <p>Start by adding departments and participants to track your cross-training program.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Departments Section -->
+        <div id="departments" class="content-section">
+            <div class="section-header">
+                <h2 class="section-title">Departments</h2>
+                <button class="btn" onclick="showDepartmentModal()">Add Department</button>
+            </div>
+            
+            <div class="search-filter">
+                <input type="text" class="search-input" id="departmentSearch" placeholder="Search departments..." onkeyup="filterDepartments()">
+            </div>
+
+            <div class="table-container">
+                <table id="departmentsTable">
+                    <thead>
+                        <tr>
+                            <th>Department Name</th>
+                            <th>Department Lead</th>
+                            <th>Participants</th>
+                            <th>Sessions Hosted</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Participants Section -->
+        <div id="participants" class="content-section">
+            <div class="section-header">
+                <h2 class="section-title">Participants</h2>
+                <button class="btn" onclick="showParticipantModal()">Add Participant</button>
+            </div>
+            
+            <div class="search-filter">
+                <input type="text" class="search-input" id="participantSearch" placeholder="Search participants..." onkeyup="filterParticipants()">
+                <select class="filter-select" id="participantDepartmentFilter" onchange="filterParticipants()">
+                    <option value="">All Departments</option>
+                </select>
+            </div>
+
+            <div class="table-container">
+                <table id="participantsTable">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Role</th>
+                            <th>Department</th>
+                            <th>Email</th>
+                            <th>Start Date</th>
+                            <th>Sessions</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Training Sessions Section -->
+        <div id="sessions" class="content-section">
+            <div class="section-header">
+                <h2 class="section-title">Training Sessions</h2>
+                <button class="btn" onclick="showSessionModal()">Add Session</button>
+            </div>
+            
+            <div class="search-filter">
+                <input type="text" class="search-input" id="sessionSearch" placeholder="Search sessions..." onkeyup="filterSessions()">
+                <select class="filter-select" id="sessionStatusFilter" onchange="filterSessions()">
+                    <option value="">All Status</option>
+                    <option value="Scheduled">Scheduled</option>
+                    <option value="Completed">Completed</option>
+                    <option value="Cancelled">Cancelled</option>
+                </select>
+            </div>
+
+            <div class="table-container">
+                <table id="sessionsTable">
+                    <thead>
+                        <tr>
+                            <th>Date & Time</th>
+                            <th>Host Person</th>
+                            <th>Guest Participant</th>
+                            <th>Topic</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Calendar Section -->
+        <div id="calendar" class="content-section">
+            <div class="section-header">
+                <h2 class="section-title">Training Calendar</h2>
+            </div>
+            
+            <div class="calendar-container">
+                <div class="calendar-header">
+                    <button class="calendar-nav" onclick="previousMonth()">‹</button>
+                    <h3 id="currentMonth"></h3>
+                    <button class="calendar-nav" onclick="nextMonth()">›</button>
+                </div>
+                <div class="calendar-grid" id="calendarGrid"></div>
+            </div>
+        </div>
+
+        <!-- Reports Section -->
+        <div id="reports" class="content-section">
+            <div class="section-header">
+                <h2 class="section-title">Reports & Analytics</h2>
+                <div>
+                    <button class="btn btn-secondary" onclick="exportData()">Export Data</button>
+                    <button class="btn btn-danger" onclick="clearAllData()" style="margin-left: 8px;">Clear All Data</button>
+                </div>
+            </div>
+            
+            <div class="form-grid">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Date Range From:</label>
+                        <input type="date" id="reportDateFrom">
+                    </div>
+                    <div class="form-group">
+                        <label>Date Range To:</label>
+                        <input type="date" id="reportDateTo">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Filter by Department:</label>
+                        <select id="reportDepartmentFilter">
+                            <option value="">All Departments</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Filter by Participant:</label>
+                        <select id="reportParticipantFilter">
+                            <option value="">All Participants</option>
+                        </select>
+                    </div>
+                </div>
+                <button class="btn" onclick="generateReport()">Generate Report</button>
+            </div>
+
+            <div id="reportResults"></div>
+        </div>
+    </div>
+
+    <!-- Department Modal -->
+    <div id="departmentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="departmentModalTitle">Add Department</h3>
+                <button class="close-btn" onclick="closeDepartmentModal()">×</button>
+            </div>
+            <form id="departmentForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Department Name *</label>
+                        <input type="text" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Department Lead</label>
+                        <input type="text" name="lead">
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea name="description"></textarea>
+                    </div>
+                </div>
+                <button type="submit" class="btn">Save Department</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Participant Modal -->
+    <div id="participantModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="participantModalTitle">Add Participant</h3>
+                <button class="close-btn" onclick="closeParticipantModal()">×</button>
+            </div>
+            <form id="participantForm">
+                <div class="form-grid">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Name *</label>
+                            <input type="text" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Role *</label>
+                            <input type="text" name="role" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Department *</label>
+                            <select name="department" required id="participantDepartmentSelect"></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" name="email">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Start Date in Program</label>
+                        <input type="date" name="startDate">
+                    </div>
+                </div>
+                <button type="submit" class="btn">Save Participant</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Session Modal -->
+    <div id="sessionModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="sessionModalTitle">Add Training Session</h3>
+                <button class="close-btn" onclick="closeSessionModal()">×</button>
+            </div>
+            <form id="sessionForm">
+                <div class="form-grid">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Date *</label>
+                            <input type="date" name="date" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Time *</label>
+                            <input type="time" name="time" required>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Host Department *</label>
+                            <select name="hostDepartment" required id="sessionHostDepartmentSelect"></select>
+                        </div>
+                        <div class="form-group">
+                            <label>Host Person *</label>
+                            <select name="hostPerson" required id="sessionHostPersonSelect"></select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Guest Participant *</label>
+                        <select name="guestParticipant" required id="sessionGuestParticipantSelect"></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Topic / Description *</label>
+                        <textarea name="topic" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Status</label>
+                        <select name="status">
+                            <option value="Scheduled">Scheduled</option>
+                            <option value="Completed">Completed</option>
+                            <option value="Cancelled">Cancelled</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="btn">Save Session</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Reflection Modal -->
+    <div id="reflectionModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Post-Training Reflection</h3>
+                <button class="close-btn" onclick="closeReflectionModal()">×</button>
+            </div>
+            <form id="reflectionForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>What I learned about the other department</label>
+                        <textarea name="learned" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>How it connects to my role</label>
+                        <textarea name="connection" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Ideas for collaboration</label>
+                        <textarea name="collaboration" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Suggestions for improvement</label>
+                        <textarea name="suggestions" rows="3"></textarea>
+                    </div>
+                </div>
+                <button type="submit" class="btn">Save Reflection</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Data storage
+        let departments = [];
+        let participants = [];
+        let sessions = [];
+        let currentMonth = new Date();
+        let editingId = null;
+        let editingType = null;
+        let currentReflectionSessionId = null;
+
+        // LocalStorage keys
+        const STORAGE_KEYS = {
+            departments: 'crosstraining_departments',
+            participants: 'crosstraining_participants',
+            sessions: 'crosstraining_sessions'
+        };
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, initializing app...');
+            loadDataFromStorage();
+            setupEventListeners();
+            updateDashboard();
+            renderDepartments();
+            renderParticipants();
+            renderSessions();
+            renderCalendar();
+            populateDropdowns();
+            console.log('App initialized');
+        });
+
+        // Load data from localStorage or use sample data
+        function loadDataFromStorage() {
+            try {
+                const savedDepartments = localStorage.getItem(STORAGE_KEYS.departments);
+                const savedParticipants = localStorage.getItem(STORAGE_KEYS.participants);
+                const savedSessions = localStorage.getItem(STORAGE_KEYS.sessions);
+
+                if (savedDepartments) {
+                    departments = JSON.parse(savedDepartments);
+                }
+                if (savedParticipants) {
+                    participants = JSON.parse(savedParticipants);
+                }
+                if (savedSessions) {
+                    sessions = JSON.parse(savedSessions);
+                }
+
+                // If no saved data exists, load sample data
+                if (departments.length === 0 && participants.length === 0 && sessions.length === 0) {
+                    loadSampleData();
+                    saveDataToStorage(); // Save the sample data
+                }
+            } catch (error) {
+                console.error('Error loading data from storage:', error);
+                loadSampleData();
+                saveDataToStorage();
+            }
+        }
+
+        // Save data to localStorage
+        function saveDataToStorage() {
+            try {
+                localStorage.setItem(STORAGE_KEYS.departments, JSON.stringify(departments));
+                localStorage.setItem(STORAGE_KEYS.participants, JSON.stringify(participants));
+                localStorage.setItem(STORAGE_KEYS.sessions, JSON.stringify(sessions));
+                console.log('Data saved to localStorage');
+            } catch (error) {
+                console.error('Error saving data to storage:', error);
+                alert('Warning: Unable to save data. Your changes may not persist after closing the browser.');
+            }
+        }
+
+        // Load sample data
+        function loadSampleData() {
+            if (departments.length === 0) {
+                departments = [
+                    { id: 1, name: 'Engineering', lead: 'John Smith', description: 'Software development and technical operations' },
+                    { id: 2, name: 'Marketing', lead: 'Sarah Johnson', description: 'Brand management and customer acquisition' }
+                ];
+            }
+            
+            if (participants.length === 0) {
+                participants = [
+                    { id: 1, name: 'Alice Cooper', role: 'Senior Developer', department: 'Engineering', email: 'alice@company.com', startDate: '2024-01-15' },
+                    { id: 2, name: 'Bob Wilson', role: 'Marketing Manager', department: 'Marketing', email: 'bob@company.com', startDate: '2024-02-01' }
+                ];
+            }
+        }
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Department form
+            const departmentForm = document.getElementById('departmentForm');
+            if (departmentForm) {
+                departmentForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    console.log('Department form submitted');
+                    saveDepartment();
+                });
+            }
+
+            // Participant form
+            const participantForm = document.getElementById('participantForm');
+            if (participantForm) {
+                participantForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    console.log('Participant form submitted');
+                    saveParticipant();
+                });
+            }
+
+            // Session form
+            const sessionForm = document.getElementById('sessionForm');
+            if (sessionForm) {
+                sessionForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    console.log('Session form submitted');
+                    saveSession();
+                });
+            }
+
+            // Reflection form
+            const reflectionForm = document.getElementById('reflectionForm');
+            if (reflectionForm) {
+                reflectionForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    console.log('Reflection form submitted');
+                    saveReflection();
+                });
+            }
+
+            // Host department change listener
+            const hostDepartmentSelect = document.getElementById('sessionHostDepartmentSelect');
+            if (hostDepartmentSelect) {
+                hostDepartmentSelect.addEventListener('change', updateHostPersonOptions);
+            }
+
+            // Close modals when clicking outside
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === modal) {
+                        modal.classList.remove('show');
+                    }
+                });
+            });
+        }
+
+        // Navigation
+        function showSection(sectionId) {
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.getElementById(sectionId).classList.add('active');
+            event.target.classList.add('active');
+
+            if (sectionId === 'calendar') {
+                renderCalendar();
+            }
+        }
+
+        // Department Management
+        function showDepartmentModal(id = null) {
+            editingId = id;
+            editingType = 'department';
+            const modal = document.getElementById('departmentModal');
+            const form = document.getElementById('departmentForm');
+            const title = document.getElementById('departmentModalTitle');
+            
+            if (id) {
+                const dept = departments.find(d => d.id === id);
+                if (dept) {
+                    title.textContent = 'Edit Department';
+                    form.elements.name.value = dept.name;
+                    form.elements.lead.value = dept.lead || '';
+                    form.elements.description.value = dept.description || '';
+                }
+            } else {
+                title.textContent = 'Add Department';
+                form.reset();
+            }
+            
+            modal.classList.add('show');
+        }
+
+        function closeDepartmentModal() {
+            document.getElementById('departmentModal').classList.remove('show');
+            editingId = null;
+            editingType = null;
+        }
+
+        function saveDepartment() {
+            console.log('saveDepartment called');
+            const form = document.getElementById('departmentForm');
+            const formData = new FormData(form);
+            
+            const department = {
+                id: editingId || Date.now(),
+                name: formData.get('name'),
+                lead: formData.get('lead'),
+                description: formData.get('description')
+            };
+
+            console.log('Department to save:', department);
+
+            if (editingId) {
+                const index = departments.findIndex(d => d.id === editingId);
+                if (index !== -1) {
+                    departments[index] = department;
+                    console.log('Updated department');
+                }
+            } else {
+                departments.push(department);
+                console.log('Added new department');
+            }
+
+            console.log('All departments:', departments);
+            saveDataToStorage(); // Save to localStorage
+            closeDepartmentModal();
+            renderDepartments();
+            populateDropdowns();
+            updateDashboard();
+        }
+
+        function deleteDepartment(id) {
+            console.log('deleteDepartment called with id:', id);
+            const dept = departments.find(d => d.id === id);
+            if (!dept) {
+                console.log('Department not found');
+                return;
+            }
+            
+            if (confirm('Are you sure you want to delete this department? This will also remove all associated participants and sessions.')) {
+                departments = departments.filter(d => d.id !== id);
+                participants = participants.filter(p => p.department !== dept.name);
+                sessions = sessions.filter(s => s.hostDepartment !== dept.name);
+                console.log('Department deleted');
+                saveDataToStorage(); // Save to localStorage
+                renderDepartments();
+                renderParticipants();
+                renderSessions();
+                populateDropdowns();
+                updateDashboard();
+            }
+        }
+
+        function renderDepartments() {
+            const tbody = document.querySelector('#departmentsTable tbody');
+            tbody.innerHTML = '';
+
+            if (departments.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="empty-state"><h3>No departments yet</h3><p>Add your first department to get started.</p></td></tr>';
+                return;
+            }
+
+            departments.forEach(dept => {
+                const participantCount = participants.filter(p => p.department === dept.name).length;
+                const sessionCount = sessions.filter(s => s.hostDepartment === dept.name).length;
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><strong>${dept.name}</strong></td>
+                    <td>${dept.lead || '-'}</td>
+                    <td>${participantCount}</td>
+                    <td>${sessionCount}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn btn-small" onclick="showDepartmentModal(${dept.id})">Edit</button>
+                            <button class="btn btn-small btn-danger" onclick="deleteDepartment(${dept.id})">Delete</button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function filterDepartments() {
+            const searchTerm = document.getElementById('departmentSearch').value.toLowerCase();
+            const rows = document.querySelectorAll('#departmentsTable tbody tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        }
+
+        // Participant Management
+        function showParticipantModal(id = null) {
+            editingId = id;
+            editingType = 'participant';
+            const modal = document.getElementById('participantModal');
+            const form = document.getElementById('participantForm');
+            const title = document.getElementById('participantModalTitle');
+            
+            populateDropdowns();
+            
+            if (id) {
+                const participant = participants.find(p => p.id === id);
+                if (participant) {
+                    title.textContent = 'Edit Participant';
+                    form.elements.name.value = participant.name;
+                    form.elements.role.value = participant.role;
+                    form.elements.department.value = participant.department;
+                    form.elements.email.value = participant.email || '';
+                    form.elements.startDate.value = participant.startDate || '';
+                }
+            } else {
+                title.textContent = 'Add Participant';
+                form.reset();
+            }
+            
+            modal.classList.add('show');
+        }
+
+        function closeParticipantModal() {
+            document.getElementById('participantModal').classList.remove('show');
+            editingId = null;
+            editingType = null;
+        }
+
+        function saveParticipant() {
+            console.log('saveParticipant called');
+            const form = document.getElementById('participantForm');
+            const formData = new FormData(form);
+            
+            const participant = {
+                id: editingId || Date.now(),
+                name: formData.get('name'),
+                role: formData.get('role'),
+                department: formData.get('department'),
+                email: formData.get('email'),
+                startDate: formData.get('startDate')
+            };
+
+            console.log('Participant to save:', participant);
+
+            if (editingId) {
+                const index = participants.findIndex(p => p.id === editingId);
+                if (index !== -1) {
+                    participants[index] = participant;
+                    console.log('Updated participant');
+                }
+            } else {
+                participants.push(participant);
+                console.log('Added new participant');
+            }
+
+            console.log('All participants:', participants);
+            saveDataToStorage(); // Save to localStorage
+            closeParticipantModal();
+            renderParticipants();
+            populateDropdowns();
+            updateDashboard();
+        }
+
+        function deleteParticipant(id) {
+            console.log('deleteParticipant called with id:', id);
+            const participant = participants.find(p => p.id === id);
+            if (!participant) {
+                console.log('Participant not found');
+                return;
+            }
+            
+            if (confirm('Are you sure you want to delete this participant? This will also remove their training sessions.')) {
+                participants = participants.filter(p => p.id !== id);
+                sessions = sessions.filter(s => s.guestParticipant !== participant.name && s.hostPerson !== participant.name);
+                console.log('Participant deleted');
+                saveDataToStorage(); // Save to localStorage
+                renderParticipants();
+                renderSessions();
+                populateDropdowns();
+                updateDashboard();
+            }
+        }
+
+        function renderParticipants() {
+            const tbody = document.querySelector('#participantsTable tbody');
+            tbody.innerHTML = '';
+
+            if (participants.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="empty-state"><h3>No participants yet</h3><p>Add participants to start tracking cross-training sessions.</p></td></tr>';
+                return;
+            }
+
+            participants.forEach(participant => {
+                const sessionCount = sessions.filter(s => s.guestParticipant === participant.name).length;
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><strong>${participant.name}</strong></td>
+                    <td>${participant.role}</td>
+                    <td>${participant.department}</td>
+                    <td>${participant.email || '-'}</td>
+                    <td>${participant.startDate ? new Date(participant.startDate).toLocaleDateString() : '-'}</td>
+                    <td>${sessionCount}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn btn-small" onclick="showParticipantModal(${participant.id})">Edit</button>
+                            <button class="btn btn-small btn-danger" onclick="deleteParticipant(${participant.id})">Delete</button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function filterParticipants() {
+            const searchTerm = document.getElementById('participantSearch').value.toLowerCase();
+            const departmentFilter = document.getElementById('participantDepartmentFilter').value;
+            const rows = document.querySelectorAll('#participantsTable tbody tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                const departmentCell = row.cells[2]?.textContent || '';
+                
+                const matchesSearch = text.includes(searchTerm);
+                const matchesDepartment = !departmentFilter || departmentCell === departmentFilter;
+                
+                row.style.display = (matchesSearch && matchesDepartment) ? '' : 'none';
+            });
+        }
+
+        // Session Management
+        function showSessionModal(id = null) {
+            editingId = id;
+            editingType = 'session';
+            const modal = document.getElementById('sessionModal');
+            const form = document.getElementById('sessionForm');
+            const title = document.getElementById('sessionModalTitle');
+            
+            populateDropdowns();
+            
+            if (id) {
+                const session = sessions.find(s => s.id === id);
+                if (session) {
+                    title.textContent = 'Edit Training Session';
+                    form.elements.date.value = session.date;
+                    form.elements.time.value = session.time;
+                    form.elements.hostDepartment.value = session.hostDepartment;
+                    updateHostPersonOptions(); // Update host person options based on department
+                    form.elements.hostPerson.value = session.hostPerson;
+                    form.elements.guestParticipant.value = session.guestParticipant;
+                    form.elements.topic.value = session.topic;
+                    form.elements.status.value = session.status;
+                }
+            } else {
+                title.textContent = 'Add Training Session';
+                form.reset();
+                form.elements.status.value = 'Scheduled';
+                updateHostPersonOptions(); // Initialize host person options
+            }
+            
+            modal.classList.add('show');
+        }
+
+        function closeSessionModal() {
+            document.getElementById('sessionModal').classList.remove('show');
+            editingId = null;
+            editingType = null;
+        }
+
+        function saveSession() {
+            console.log('saveSession called');
+            const form = document.getElementById('sessionForm');
+            const formData = new FormData(form);
+            
+            const session = {
+                id: editingId || Date.now(),
+                date: formData.get('date'),
+                time: formData.get('time'),
+                hostDepartment: formData.get('hostDepartment'),
+                hostPerson: formData.get('hostPerson'),
+                guestParticipant: formData.get('guestParticipant'),
+                topic: formData.get('topic'),
+                status: formData.get('status'),
+                reflection: editingId ? sessions.find(s => s.id === editingId)?.reflection : null
+            };
+
+            console.log('Session to save:', session);
+
+            if (editingId) {
+                const index = sessions.findIndex(s => s.id === editingId);
+                if (index !== -1) {
+                    sessions[index] = session;
+                    console.log('Updated session');
+                }
+            } else {
+                sessions.push(session);
+                console.log('Added new session');
+            }
+
+            console.log('All sessions:', sessions);
+            saveDataToStorage(); // Save to localStorage
+            closeSessionModal();
+            renderSessions();
+            renderCalendar();
+            updateDashboard();
+        }
+
+        function deleteSession(id) {
+            if (confirm('Are you sure you want to delete this training session?')) {
+                sessions = sessions.filter(s => s.id !== id);
+                saveDataToStorage(); // Save to localStorage
+                renderSessions();
+                renderCalendar();
+                updateDashboard();
+            }
+        }
+
+        function showReflectionModal(sessionId) {
+            currentReflectionSessionId = sessionId;
+            const session = sessions.find(s => s.id === sessionId);
+            const modal = document.getElementById('reflectionModal');
+            const form = document.getElementById('reflectionForm');
+            
+            if (session && session.reflection) {
+                form.elements.learned.value = session.reflection.learned || '';
+                form.elements.connection.value = session.reflection.connection || '';
+                form.elements.collaboration.value = session.reflection.collaboration || '';
+                form.elements.suggestions.value = session.reflection.suggestions || '';
+            } else {
+                form.reset();
+            }
+            
+            modal.classList.add('show');
+        }
+
+        function closeReflectionModal() {
+            document.getElementById('reflectionModal').classList.remove('show');
+            currentReflectionSessionId = null;
+        }
+
+        function updateHostPersonOptions() {
+            const hostDepartmentSelect = document.getElementById('sessionHostDepartmentSelect');
+            const hostPersonSelect = document.getElementById('sessionHostPersonSelect');
+            const guestParticipantSelect = document.getElementById('sessionGuestParticipantSelect');
+            
+            if (!hostDepartmentSelect || !hostPersonSelect || !guestParticipantSelect) return;
+            
+            const selectedDepartment = hostDepartmentSelect.value;
+            
+            // Update host person options
+            hostPersonSelect.innerHTML = '<option value="">Select Host Person</option>';
+            
+            if (selectedDepartment) {
+                const departmentParticipants = participants.filter(p => p.department === selectedDepartment);
+                departmentParticipants.forEach(participant => {
+                    const option = document.createElement('option');
+                    option.value = participant.name;
+                    option.textContent = `${participant.name} (${participant.role})`;
+                    hostPersonSelect.appendChild(option);
+                });
+            }
+
+            // Update guest participant options (exclude people from host department)
+            const currentGuestValue = guestParticipantSelect.value;
+            guestParticipantSelect.innerHTML = '<option value="">Select Guest Participant</option>';
+            
+            const guestParticipants = participants.filter(p => p.department !== selectedDepartment);
+            guestParticipants.forEach(participant => {
+                const option = document.createElement('option');
+                option.value = participant.name;
+                option.textContent = `${participant.name} (${participant.department})`;
+                guestParticipantSelect.appendChild(option);
+            });
+            
+            // Restore guest selection if still valid
+            if (currentGuestValue && guestParticipants.some(p => p.name === currentGuestValue)) {
+                guestParticipantSelect.value = currentGuestValue;
+            }
+        }
+
+        function saveReflection() {
+            const form = document.getElementById('reflectionForm');
+            const formData = new FormData(form);
+            
+            const reflection = {
+                learned: formData.get('learned'),
+                connection: formData.get('connection'),
+                collaboration: formData.get('collaboration'),
+                suggestions: formData.get('suggestions')
+            };
+
+            const sessionIndex = sessions.findIndex(s => s.id === currentReflectionSessionId);
+            if (sessionIndex !== -1) {
+                sessions[sessionIndex].reflection = reflection;
+                if (sessions[sessionIndex].status === 'Scheduled') {
+                    sessions[sessionIndex].status = 'Completed';
+                }
+            }
+
+            saveDataToStorage(); // Save to localStorage
+            closeReflectionModal();
+            renderSessions();
+            updateDashboard();
+        }
+
+        function renderSessions() {
+            const tbody = document.querySelector('#sessionsTable tbody');
+            tbody.innerHTML = '';
+
+            if (sessions.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="empty-state"><h3>No training sessions yet</h3><p>Schedule your first cross-training session.</p></td></tr>';
+                return;
+            }
+
+            sessions.forEach(session => {
+                const datetime = new Date(`${session.date}T${session.time}`);
+                const formattedDate = datetime.toLocaleDateString();
+                const formattedTime = datetime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${formattedDate}<br><small>${formattedTime}</small></td>
+                    <td>${session.hostPerson || session.hostDepartment}<br><small>${session.hostDepartment}</small></td>
+                    <td>${session.guestParticipant}</td>
+                    <td>${session.topic}</td>
+                    <td><span class="status-badge status-${session.status.toLowerCase()}">${session.status}</span></td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn btn-small" onclick="showSessionModal(${session.id})">Edit</button>
+                            ${session.status === 'Completed' ? 
+                                `<button class="btn btn-small btn-secondary" onclick="showReflectionModal(${session.id})">Reflection</button>` :
+                                `<button class="btn btn-small btn-secondary" onclick="showReflectionModal(${session.id})">Add Reflection</button>`
+                            }
+                            <button class="btn btn-small btn-danger" onclick="deleteSession(${session.id})">Delete</button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function filterSessions() {
+            const searchTerm = document.getElementById('sessionSearch').value.toLowerCase();
+            const statusFilter = document.getElementById('sessionStatusFilter').value;
+            const rows = document.querySelectorAll('#sessionsTable tbody tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                const statusCell = row.querySelector('.status-badge')?.textContent || '';
+                
+                const matchesSearch = text.includes(searchTerm);
+                const matchesStatus = !statusFilter || statusCell === statusFilter;
+                
+                row.style.display = (matchesSearch && matchesStatus) ? '' : 'none';
+            });
+        }
+
+        // Calendar
+        function renderCalendar() {
+            const monthNames = ["January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"];
+            
+            document.getElementById('currentMonth').textContent = 
+                `${monthNames[currentMonth.getMonth()]} ${currentMonth.getFullYear()}`;
+
+            const firstDay = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1);
+            const lastDay = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0);
+            const startDate = new Date(firstDay);
+            startDate.setDate(startDate.getDate() - firstDay.getDay());
+
+            const calendarGrid = document.getElementById('calendarGrid');
+            calendarGrid.innerHTML = '';
+
+            // Add day headers
+            const dayHeaders = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            dayHeaders.forEach(day => {
+                const header = document.createElement('div');
+                header.style.background = '#f7fafc';
+                header.style.padding = '8px';
+                header.style.fontWeight = 'bold';
+                header.style.textAlign = 'center';
+                header.textContent = day;
+                calendarGrid.appendChild(header);
+            });
+
+            // Add calendar days
+            for (let i = 0; i < 42; i++) {
+                const currentDate = new Date(startDate);
+                currentDate.setDate(startDate.getDate() + i);
+                
+                const dayElement = document.createElement('div');
+                dayElement.className = 'calendar-day';
+                
+                const dayNumber = document.createElement('div');
+                dayNumber.className = 'calendar-day-number';
+                dayNumber.textContent = currentDate.getDate();
+                
+                if (currentDate.getMonth() !== currentMonth.getMonth()) {
+                    dayNumber.style.color = '#cbd5e0';
+                }
+                
+                dayElement.appendChild(dayNumber);
+
+                // Add sessions for this day
+                const dayString = currentDate.toISOString().split('T')[0];
+                const daySessions = sessions.filter(s => s.date === dayString);
+                
+                daySessions.forEach(session => {
+                    const eventElement = document.createElement('div');
+                    eventElement.className = `calendar-event ${session.status.toLowerCase()}`;
+                    eventElement.textContent = `${session.time} - ${session.topic.substring(0, 20)}...`;
+                    eventElement.onclick = () => showSessionModal(session.id);
+                    dayElement.appendChild(eventElement);
+                });
+
+                calendarGrid.appendChild(dayElement);
+            }
+        }
+
+        function previousMonth() {
+            currentMonth.setMonth(currentMonth.getMonth() - 1);
+            renderCalendar();
+        }
+
+        function nextMonth() {
+            currentMonth.setMonth(currentMonth.getMonth() + 1);
+            renderCalendar();
+        }
+
+        // Utility Functions
+        function populateDropdowns() {
+            // Department dropdowns
+            const departmentSelects = [
+                document.getElementById('participantDepartmentSelect'),
+                document.getElementById('sessionHostDepartmentSelect'),
+                document.getElementById('participantDepartmentFilter'),
+                document.getElementById('reportDepartmentFilter')
+            ];
+
+            departmentSelects.forEach(select => {
+                if (select) {
+                    const currentValue = select.value;
+                    select.innerHTML = '';
+                    
+                    if (select.id.includes('Filter')) {
+                        select.innerHTML = '<option value="">All Departments</option>';
+                    } else {
+                        select.innerHTML = '<option value="">Select Department</option>';
+                    }
+                    
+                    departments.forEach(dept => {
+                        const option = document.createElement('option');
+                        option.value = dept.name;
+                        option.textContent = dept.name;
+                        select.appendChild(option);
+                    });
+                    
+                    select.value = currentValue;
+                }
+            });
+
+            // Update host person options when host department changes
+            if (document.getElementById('sessionHostDepartmentSelect')) {
+                updateHostPersonOptions();
+            }
+
+            // Participant dropdowns (for reports only - session guest participants handled in updateHostPersonOptions)
+            const participantSelects = [
+                document.getElementById('reportParticipantFilter')
+            ];
+
+            participantSelects.forEach(select => {
+                if (select) {
+                    const currentValue = select.value;
+                    select.innerHTML = '<option value="">All Participants</option>';
+                    
+                    participants.forEach(participant => {
+                        const option = document.createElement('option');
+                        option.value = participant.name;
+                        option.textContent = `${participant.name} (${participant.department})`;
+                        select.appendChild(option);
+                    });
+                    
+                    select.value = currentValue;
+                }
+            });
+        }
+
+        function updateDashboard() {
+            document.getElementById('totalSessions').textContent = sessions.length;
+            document.getElementById('completedSessions').textContent = sessions.filter(s => s.status === 'Completed').length;
+            document.getElementById('totalDepartments').textContent = departments.length;
+            document.getElementById('totalParticipants').textContent = participants.length;
+
+            // Update recent activity
+            const recentActivity = document.getElementById('recentActivity');
+            const recentSessions = sessions
+                .sort((a, b) => new Date(`${b.date}T${b.time}`) - new Date(`${a.date}T${a.time}`))
+                .slice(0, 5);
+
+            if (recentSessions.length === 0) {
+                recentActivity.innerHTML = `
+                    <div class="empty-state">
+                        <h3>No recent activity</h3>
+                        <p>Start by adding departments and participants to track your cross-training program.</p>
+                    </div>
+                `;
+            } else {
+                recentActivity.innerHTML = `
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Session</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${recentSessions.map(session => `
+                                    <tr>
+                                        <td>${new Date(`${session.date}T${session.time}`).toLocaleDateString()}</td>
+                                        <td>${session.hostDepartment} → ${session.guestParticipant}</td>
+                                        <td><span class="status-badge status-${session.status.toLowerCase()}">${session.status}</span></td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            }
+        }
+
+        // Reports
+        function generateReport() {
+            const fromDate = document.getElementById('reportDateFrom').value;
+            const toDate = document.getElementById('reportDateTo').value;
+            const departmentFilter = document.getElementById('reportDepartmentFilter').value;
+            const participantFilter = document.getElementById('reportParticipantFilter').value;
+
+            let filteredSessions = sessions;
+
+            if (fromDate) {
+                filteredSessions = filteredSessions.filter(s => s.date >= fromDate);
+            }
+            if (toDate) {
+                filteredSessions = filteredSessions.filter(s => s.date <= toDate);
+            }
+            if (departmentFilter) {
+                filteredSessions = filteredSessions.filter(s => s.hostDepartment === departmentFilter);
+            }
+            if (participantFilter) {
+                filteredSessions = filteredSessions.filter(s => s.guestParticipant === participantFilter);
+            }
+
+            const reportResults = document.getElementById('reportResults');
+            
+            if (filteredSessions.length === 0) {
+                reportResults.innerHTML = `
+                    <div class="empty-state">
+                        <h3>No sessions found</h3>
+                        <p>Try adjusting your filter criteria.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const completedSessions = filteredSessions.filter(s => s.status === 'Completed');
+            const departmentStats = {};
+            const participantStats = {};
+
+            filteredSessions.forEach(session => {
+                departmentStats[session.hostDepartment] = (departmentStats[session.hostDepartment] || 0) + 1;
+                participantStats[session.guestParticipant] = (participantStats[session.guestParticipant] || 0) + 1;
+            });
+
+            reportResults.innerHTML = `
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number">${filteredSessions.length}</div>
+                        <div class="stat-label">Total Sessions</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${completedSessions.length}</div>
+                        <div class="stat-label">Completed Sessions</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">${Math.round((completedSessions.length / filteredSessions.length) * 100) || 0}%</div>
+                        <div class="stat-label">Completion Rate</div>
+                    </div>
+                </div>
+                
+                <div class="table-container" style="margin-top: 24px;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date & Time</th>
+                                <th>Host Department</th>
+                                <th>Guest Participant</th>
+                                <th>Topic</th>
+                                <th>Status</th>
+                                <th>Has Reflection</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${filteredSessions.map(session => `
+                                <tr>
+                                    <td>${new Date(`${session.date}T${session.time}`).toLocaleDateString()}<br><small>${new Date(`${session.date}T${session.time}`).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</small></td>
+                                    <td>${session.hostDepartment}</td>
+                                    <td>${session.guestParticipant}</td>
+                                    <td>${session.topic}</td>
+                                    <td><span class="status-badge status-${session.status.toLowerCase()}">${session.status}</span></td>
+                                    <td>${session.reflection ? 'Yes' : 'No'}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        function exportData() {
+            const data = {
+                departments,
+                participants,
+                sessions,
+                exportDate: new Date().toISOString()
+            };
+
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `cross-training-data-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // Clear all data function
+        function clearAllData() {
+            if (confirm('Are you sure you want to clear ALL data? This action cannot be undone!\n\nThis will remove all departments, participants, and sessions.')) {
+                if (confirm('This is your final warning! All data will be permanently deleted. Continue?')) {
+                    // Clear arrays
+                    departments = [];
+                    participants = [];
+                    sessions = [];
+                    
+                    // Clear localStorage
+                    localStorage.removeItem(STORAGE_KEYS.departments);
+                    localStorage.removeItem(STORAGE_KEYS.participants);
+                    localStorage.removeItem(STORAGE_KEYS.sessions);
+                    
+                    // Load sample data
+                    loadSampleData();
+                    saveDataToStorage();
+                    
+                    // Refresh all displays
+                    renderDepartments();
+                    renderParticipants();
+                    renderSessions();
+                    renderCalendar();
+                    populateDropdowns();
+                    updateDashboard();
+                    
+                    alert('All data has been cleared and sample data has been loaded.');
+                }
+            }
+        }
+    </script>
+</body>
+</html>
